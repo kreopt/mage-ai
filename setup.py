@@ -89,7 +89,6 @@ setuptools.setup(
             'oracledb==1.3.1',
         ],
         'postgres': [
-            'psycopg2==2.9.3',
             'psycopg2-binary==2.9.3',
             'sshtunnel==0.4.0',
         ],
@@ -183,7 +182,6 @@ setuptools.setup(
             'prometheus_client>=0.18.0',
             'protobuf~=4.21.12',
             'psycopg2-binary==2.9.3',
-            'psycopg2==2.9.3',
             'pydruid==0.6.5',
             'pymongo==4.3.3',
             'pyodbc==4.0.35',
