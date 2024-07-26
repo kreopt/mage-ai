@@ -153,7 +153,7 @@ class PipelineScheduleProjectPlatformMixin:
 
         if not self.landing_time_enabled() and \
                 self.start_time is not None and \
-                compare(now, self.start_time.replace(tzinfo=pytz.UTC)) == -1:
+                compare(now, self.start_time.astimezone(pytz.UTC)) == -1:
             return False
 
         pipeline_use = pipeline or self.pipeline
@@ -189,18 +189,13 @@ class PipelineScheduleProjectPlatformMixin:
 
             # If the execution date is before start time, don't schedule it
             if self.start_time is not None and \
-                    compare(current_execution_date, self.start_time.replace(tzinfo=pytz.UTC)) == -1:
+                    compare(current_execution_date, self.start_time.astimezone(tzinfo=pytz.UTC)) == -1:
                 return False
 
             # If there is a pipeline_run with an execution_date the same as the
             # current_execution_date, then don’t schedule
-            if not find(
-                lambda x: compare(
-                    x.execution_date.replace(tzinfo=pytz.UTC),
-                    current_execution_date,
-                ) == 0,
-                self.fetch_pipeline_runs([self.id])
-            ):
+            current_run = self.fetch_pipeline_run(self.id, current_execution_date)
+            if not current_run:
                 if self.landing_time_enabled():
                     if not previous_runtimes or len(previous_runtimes) == 0:
                         return True

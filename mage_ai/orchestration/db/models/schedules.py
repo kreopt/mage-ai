@@ -135,6 +135,16 @@ class PipelineSchedule(PipelineScheduleProjectPlatformMixin, BaseModel):
         return value
 
     @classmethod
+    def fetch_pipeline_run(self, pipeline_schedule_id: int, execution_date: datetime) -> 'PipelineRun':
+        query = PipelineRun.query
+        query.cache = True
+        query = query.filter(
+            PipelineRun.pipeline_schedule_id == pipeline_schedule_id,
+            PipelineRun.execution_date == execution_date
+        )
+        return query.first()
+
+    @classmethod
     def fetch_pipeline_runs(self, ids: List[int]) -> List:
         query = PipelineRun.query
         query.cache = True
@@ -542,7 +552,7 @@ class PipelineSchedule(PipelineScheduleProjectPlatformMixin, BaseModel):
         if (
             not self.landing_time_enabled()
             and self.start_time is not None
-            and compare(now, self.start_time.replace(tzinfo=pytz.UTC)) == -1
+            and compare(now, self.start_time.astimezone(pytz.UTC)) == -1
         ):
             return False
 
@@ -613,7 +623,7 @@ class PipelineSchedule(PipelineScheduleProjectPlatformMixin, BaseModel):
             # was last enabled, don't schedule it.
             if (
                 self.start_time is not None
-                and compare(current_execution_date, self.start_time.replace(tzinfo=pytz.UTC)) == -1
+                and compare(current_execution_date, self.start_time.astimezone(pytz.UTC)) == -1
             ) or avoid_initial_pipeline_run:
                 return False
 
