@@ -189,7 +189,7 @@ class PipelineScheduleProjectPlatformMixin:
 
             # If the execution date is before start time, don't schedule it
             if self.start_time is not None and \
-                    compare(current_execution_date, self.start_time.astimezone(tzinfo=pytz.UTC)) == -1:
+                    compare(current_execution_date, self.start_time.astimezone(pytz.UTC)) == -1:
                 return False
 
             # If there is a pipeline_run with an execution_date the same as the
