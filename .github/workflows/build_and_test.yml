@@ -16,6 +16,9 @@ on:
       - "requirements.txt"
       - "setup.py"
 
+env:
+  ENV: test_mage
+
 jobs:
   check-code-quality:
 
@@ -50,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     needs: check-code-quality
     steps:
       - uses: actions/checkout@v3
