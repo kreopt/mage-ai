@@ -3,6 +3,7 @@ from mage_ai.shared.hash import index_by
 
 SQL_SOURCES = [
     dict(name='BigQuery'),
+    dict(name='Doris'),
     dict(
         name='Microsoft SQL Server',
         uuid='mssql',
@@ -53,6 +54,7 @@ SOURCES = sorted([
     dict(name='Sftp'),
     dict(name='Stripe'),
     dict(name='Tableau'),
+    dict(name='Teradata'),
     dict(name='Twitter Ads'),
     dict(name='Zendesk'),
 ] + SQL_SOURCES, key=lambda x: x['name'])

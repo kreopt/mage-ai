@@ -47,10 +47,12 @@ class Snowflake(Destination):
         return SnowflakeConnection(
             account=self.config['account'],
             database=self.config['database'],
-            password=self.config['password'],
             schema=self.config['schema'],
             username=self.config['username'],
             warehouse=self.config['warehouse'],
+            password=self.config.get('password'),
+            private_key_file=self.config.get('private_key_file'),
+            private_key_file_pwd=self.config.get('private_key_file_pwd'),
             role=self.config.get('role'),
         )
 
@@ -308,7 +310,7 @@ WHERE TABLE_SCHEMA = '{schema_name}' AND TABLE_NAME = '{table_name}'
                 if len(t) >= 1 and type(t[0]) is int:
                     arr.append(t)
 
-        print(arr)
+        self.logger.debug(f'arr: {arr}')
 
         if len(arr) == 1:
             if len(arr[0]) >= 1:
@@ -367,7 +369,7 @@ WHERE TABLE_SCHEMA = '{schema_name}' AND TABLE_NAME = '{table_name}'
         if connection is None:
             snowflake_connection = self.build_connection()
             connection = snowflake_connection.build_connection()
-            new_connection_created
+            new_connection_created = True
         if self.disable_double_quotes:
             df.columns = [col.upper() for col in df.columns]
 

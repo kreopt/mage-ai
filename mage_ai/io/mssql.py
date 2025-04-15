@@ -14,6 +14,7 @@ from mage_ai.io.config import BaseConfigLoader, ConfigKey
 from mage_ai.io.constants import UNIQUE_CONFLICT_METHOD_UPDATE
 from mage_ai.io.export_utils import PandasTypes
 from mage_ai.io.sql import BaseSQL
+from mage_ai.shared.hash import extract
 from mage_ai.shared.parsers import encode_complex
 
 MERGE_TABLE_SQL = '''MERGE {table_name} AS t
@@ -37,12 +38,14 @@ class MSSQL(BaseSQL):
         host: str,
         password: str,
         user: str,
+        authentication: str = None,
         schema: str = None,
         port: int = 1433,
         verbose: bool = True,
         **kwargs,
     ) -> None:
         super().__init__(
+            authentication=authentication,
             database=database,
             server=host,
             user=user,
@@ -60,15 +63,19 @@ class MSSQL(BaseSQL):
         database = self.settings['database']
         username = self.settings['user']
         password = self.settings['password']
-        return (
-            f'DRIVER={{{driver}}};'
-            f'SERVER={server};'
-            f'DATABASE={database};'
-            f'UID={username};'
-            f'PWD={password};'
-            'ENCRYPT=yes;'
-            'TrustServerCertificate=yes;'
-        )
+        conn_opts = [
+            f'DRIVER={{{driver}}}',
+            f'SERVER={server}',
+            f'DATABASE={database}',
+            f'UID={username}',
+            f'PWD={password}',
+            'ENCRYPT=yes',
+            'TrustServerCertificate=yes',
+        ]
+        if self.settings.get('authentication'):
+            authentication = self.settings.get('authentication')
+            conn_opts.append(f'Authentication={authentication}')
+        return ';'.join(conn_opts)
 
     def default_schema(self) -> str:
         return self.settings.get('schema') or 'dbo'
@@ -197,9 +204,11 @@ class MSSQL(BaseSQL):
                 TrustServerCertificate='yes',
             ),
         )
+        conn_kwargs = extract(kwargs, ['pool_size', 'max_overflow'])
         engine = create_engine(
             connection_url,
             fast_executemany=True,
+            **conn_kwargs,
         )
 
         unique_conflict_method = kwargs.get('unique_conflict_method')
@@ -242,6 +251,7 @@ class MSSQL(BaseSQL):
                     method=merge_table,
                 )
                 return
+        sql_kwargs = extract(kwargs, ['chunksize', 'method'])
 
         df.to_sql(
             table_name,
@@ -249,6 +259,7 @@ class MSSQL(BaseSQL):
             schema=schema_name,
             if_exists=if_exists or ExportWritePolicy.REPLACE,
             index=False,
+            **sql_kwargs,
         )
 
     def get_type(self, column: Series, dtype: str) -> str:
@@ -313,6 +324,7 @@ class MSSQL(BaseSQL):
     @classmethod
     def with_config(cls, config: BaseConfigLoader) -> 'MSSQL':
         return cls(
+            authentication=config[ConfigKey.MSSQL_AUTHENTICATION],
             database=config[ConfigKey.MSSQL_DATABASE],
             schema=config[ConfigKey.MSSQL_SCHEMA],
             driver=config[ConfigKey.MSSQL_DRIVER],

@@ -878,7 +878,7 @@ class Block(
         relative_path: bool = False,
     ) -> str:
         file_extension = BLOCK_LANGUAGE_TO_FILE_EXTENSION[language]
-        block_directory = block_type + 's' if block_type != BlockType.CUSTOM else block_type
+        block_directory = f'{block_type}s' if block_type != BlockType.CUSTOM else block_type
 
         parts = []
         if not relative_path:
@@ -1010,7 +1010,7 @@ class Block(
         self,
         content: str,
     ) -> str:
-        return '@' + self.type + '\n' + content
+        return f'@{self.type}\n{content}'
 
     @classmethod
     def after_create(cls, block: 'Block', **kwargs) -> None:
@@ -1199,7 +1199,7 @@ class Block(
 
     @classmethod
     def file_directory_name(self, block_type: BlockType) -> str:
-        return block_type + 's' if block_type != BlockType.CUSTOM else block_type
+        return f'{block_type}s' if block_type != BlockType.CUSTOM else block_type
 
     @classmethod
     def block_type_from_path(
@@ -1218,7 +1218,7 @@ class Block(
         for block_type in BlockType:
             if BlockType.CUSTOM == block_type and dir_name == block_type:
                 return BlockType.CUSTOM
-            elif dir_name == block_type + 's':
+            elif dir_name == f'{block_type}s':
                 return block_type
 
     @classmethod
@@ -3941,7 +3941,6 @@ class Block(
             for v in b.output_variables(execution_partition=execution_partition):
                 objs.append(
                     self.get_variable_object(
-                        self.pipeline_uuid,
                         b.uuid,
                         v,
                         partition=execution_partition,

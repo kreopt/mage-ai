@@ -16,6 +16,8 @@ class ConfigKey(StrEnum):
     List of configuration settings for use with data IO clients.
     """
 
+    AIRTABLE_ACCESS_TOKEN = "AIRTABLE_ACCESS_TOKEN"
+
     ALGOLIA_APP_ID = 'ALGOLIA_APP_ID'
     ALGOLIA_API_KEY = 'ALGOLIA_API_KEY'
     ALGOLIA_INDEX_NAME = 'ALGOLIA_INDEX_NAME'
@@ -64,6 +66,7 @@ class ConfigKey(StrEnum):
     MONGODB_PORT = 'MONGODB_PORT'
     MONGODB_USER = 'MONGODB_USER'
 
+    MSSQL_AUTHENTICATION = 'MSSQL_AUTHENTICATION'
     MSSQL_DATABASE = 'MSSQL_DATABASE'
     MSSQL_DRIVER = 'MSSQL_DRIVER'
     MSSQL_HOST = 'MSSQL_HOST'
@@ -78,6 +81,7 @@ class ConfigKey(StrEnum):
     MYSQL_PASSWORD = 'MYSQL_PASSWORD'
     MYSQL_PORT = 'MYSQL_PORT'
     MYSQL_USER = 'MYSQL_USER'
+    MYSQL_ALLOW_LOCAL_INFILE = 'MYSQL_ALLOW_LOCAL_INFILE'
 
     ORACLEDB_USER = 'ORACLEDB_USER'
     ORACLEDB_PASSWORD = 'ORACLEDB_PASSWORD'
@@ -338,6 +342,7 @@ class VerboseConfigKey(StrEnum):
     Config key headers for the verbose configuration file format.
     """
 
+    AIRTABLE = 'Airtable'
     ALGOLIA = 'Algolia'
     AWS = 'AWS'
     BIGQUERY = 'BigQuery'
@@ -356,6 +361,7 @@ class VerboseConfigKey(StrEnum):
 
 class ConfigFileLoader(BaseConfigLoader):
     KEY_MAP = {
+        ConfigKey.AIRTABLE_ACCESS_TOKEN: VerboseConfigKey.AIRTABLE,
         ConfigKey.ALGOLIA_APP_ID: (
             VerboseConfigKey.ALGOLIA, 'app_id'),
         ConfigKey.ALGOLIA_API_KEY: (

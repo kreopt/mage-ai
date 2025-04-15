@@ -1,6 +1,6 @@
 ---
 title: "Configure your development environment"
-sidebarTitle: "Environment setup"
+sidebarTitle: "Dev environment"
 icon: "alien"
 description: "Want to get started contributing code? You're in the right place! Read on to learn how to set up your development environment."
 ---
@@ -39,6 +39,10 @@ Next, you'll need to configure your development environment. This should be as s
 <Step title="Build the dev docker image and run all services">
    ```bash
    ./scripts/dev.sh [project_name]
+   ```
+   If you only work on backend, use the command below for better performance
+   ```bash
+   ./scripts/start.sh [project_name]
    ```
 </Step>
 <Step title="Open Mage">

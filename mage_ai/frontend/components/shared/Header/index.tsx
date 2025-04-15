@@ -29,7 +29,7 @@ import useCustomDesign from '@utils/models/customDesign/useCustomDesign';
 import useDelayFetch from '@api/utils/useDelayFetch';
 import useProject from '@utils/models/project/useProject';
 import { BLUE_TRANSPARENT, YELLOW } from '@oracle/styles/colors/main';
-import { BranchAlt, Planet, Slack, UFO } from '@oracle/icons';
+import { BranchAlt, MageProLetters, Planet, Slack, UFO } from '@oracle/icons';
 import {
   ButtonInputStyle,
   CUSTOM_LOGO_HEIGHT,
@@ -107,8 +107,8 @@ function Header({
     {
       revalidateOnFocus: false,
     }, {
-      pauseFetch: REQUIRE_USER_AUTHENTICATION() && !loggedIn,
-    },
+    pauseFetch: REQUIRE_USER_AUTHENTICATION() && !loggedIn,
+  },
     {
       delay: 11000,
     },
@@ -244,9 +244,9 @@ function Header({
   }
 
   const breadcrumbs = useMemo(() => [
-      ...breadcrumbProjects,
-      ...(breadcrumbsProp || []),
-    ], [
+    ...breadcrumbProjects,
+    ...(breadcrumbsProp || []),
+  ], [
     breadcrumbProjects,
     breadcrumbsProp,
     project,
@@ -259,28 +259,6 @@ function Header({
     height?: number;
     width?: number;
   }>(null);
-
-  const customDesignMedia = useMemo(() => {
-    if (typeof window !== 'undefined') {
-      const media = design?.components?.header?.media;
-      if (media) {
-        const image = new Image();
-        const imageSrc = media?.url || media?.file_path;
-
-        if (typeof imageSrc !== 'undefined' && imageSrc !== null) {
-          image.src = imageSrc;
-          image.onload = () => {
-            setCustomMediaSize(image);
-          };
-
-          return image;
-        }
-      }
-    }
-  }, [
-    design,
-    setCustomMediaSize,
-  ]);
 
   const logoLink = useMemo(() => {
     let logoHeight = LOGO_HEIGHT;
@@ -334,22 +312,23 @@ function Header({
         uuid: 'user_settings',
       },
       {
-        label: () => 'Launch command center',
-        onClick: (e) => {
-          pauseEvent(e);
-          launchCommandCenterWrapper();
+        label: () => 'Light mode',
+        linkProps: {
+          href: 'https://www.mage.ai/build?ref=oss',
+          openNewWindow: true,
         },
-        uuid: 'Launch command center',
+        tag: 'Pro',
+        uuid: 'light_mode',
       },
     ];
 
   if (REQUIRE_USER_AUTHENTICATION()) {
     userDropdown.push(
-    {
-      label: () => 'Sign out',
-      onClick: () => logout(),
-      uuid: 'sign_out',
-    });
+      {
+        label: () => 'Sign out',
+        onClick: () => logout(),
+        uuid: 'sign_out',
+      });
   }
 
   const [showModal, hideModal] = useModal(() => (
@@ -357,7 +336,7 @@ function Header({
       branch={branch}
       fetchBranch={fetchBranch}
     />
-  ),{}, [branch, fetchBranch], {
+  ), {}, [branch, fetchBranch], {
     background: true,
     uuid: 'git_actions',
   });
@@ -472,74 +451,6 @@ function Header({
             />
           </Flex>
 
-          {(!!project && !hideActions) && (
-            <Flex flex={1} alignItems="center" justifyContent="center">
-              <Spacing ml={PADDING_UNITS} />
-
-              <Button
-                noBackground
-                noBorder
-                noPadding
-                onClick={(e) => {
-                  pauseEvent(e);
-                  launchCommandCenterWrapper();
-                }}
-              >
-                <ButtonInputStyle active={CommandCenterStateEnum.OPEN === commandCenterState}>
-                  <FlexContainer alignItems="center">
-                    <>
-                      {CommandCenterStateEnum.OPEN === commandCenterState
-                        ? <UFO muted size={2 * UNIT} />
-                        : <Planet
-                          size={2 * UNIT}
-                          success={!enableCommandCenterLoading && !commandCenterEnabled}
-                          warning={enableCommandCenterLoading}
-                        />
-                      }
-                    </>
-
-                    <div style={{ marginRight: 1.5 * UNIT }} />
-
-                    {CommandCenterStateEnum.OPEN !== commandCenterState && (
-                      <Text default noWrapping weightStyle={4}>
-                        {commandCenterEnabled
-                          ? 'Command Center'
-                          : enableCommandCenterLoading
-                            ? 'Launching Command Center' : 'Launch Command Center'
-                        }
-                      </Text>
-                    )}
-                    {CommandCenterStateEnum.OPEN === commandCenterState && (
-                      <Text muted noWrapping>
-                        Command Center launched
-                      </Text>
-                    )}
-
-                    {enableCommandCenterLoading && (
-                      <>
-                        <div style={{ marginRight: 1.5 * UNIT }} />
-                        <Loading
-                          color={themeContext?.accent?.warning}
-                          loadingStyle={LoadingStyleEnum.BLOCKS}
-                          width={1.5 * UNIT}
-                        />
-                      </>
-                    )}
-
-                    {commandCenterEnabled && (
-                      <>
-                        <div style={{ marginRight: 1.5 * UNIT }} />
-                        <LaunchKeyboardShortcutText compact settings={getSetSettings()} small />
-                      </>
-                    )}
-                  </FlexContainer>
-                </ButtonInputStyle>
-              </Button>
-
-              <Spacing mr={PADDING_UNITS} />
-            </Flex>
-          )}
-
           <Flex alignItems="center">
             {gitIntegrationEnabled && branch && (
               <Spacing mr={1}>
@@ -582,7 +493,7 @@ function Header({
               </Button>
             )}
 
-            {version && typeof(version) !== 'undefined' && (
+            {version && typeof (version) !== 'undefined' && (
               <Spacing px={1}>
                 <Link
                   href="https://www.mage.ai/changelog"
@@ -622,6 +533,26 @@ function Header({
                 uuid="Header/live_chat"
               >
                 Live help
+              </KeyboardShortcutButton>
+            </Spacing>
+
+            <Spacing ml={1}>
+              <KeyboardShortcutButton
+                compact
+                highlightOnHoverAlt
+                inline
+                linkProps={{
+                  as: 'https://cloud.mage.ai/sign-up?ref=oss',
+                  href: 'https://cloud.mage.ai/sign-up?ref=oss',
+                }}
+                openNewTab
+                noBackground
+                noHoverUnderline
+                sameColorAsText
+                afterElement={<MageProLetters size={24} />}
+                uuid="Header/pro"
+              >
+                Try
               </KeyboardShortcutButton>
             </Spacing>
 
